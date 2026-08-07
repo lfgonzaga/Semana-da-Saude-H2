@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semana da Saúde - Inscrições</title>
+    <title>Be Well - Semana da Saúde</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --cor-primaria: #0d9488;
-            --cor-primaria-escura: #0f766e;
-            --cor-secundaria: #f0fdfa;
-            --cor-acento: #f59e0b;
-            --cor-texto: #1e293b;
-            --cor-texto-claro: #64748b;
-            --cor-fundo: #f8fafc;
-            --cor-borda: #e2e8f0;
+            --cor-primaria: #00BFA5;
+            --cor-primaria-escura: #00897B;
+            --cor-fundo: #ffffff;
+            --cor-card: #ffffff;
+            --cor-card-hover: #f9fffe;
+            --cor-texto: #1a1a1a;
+            --cor-texto-claro: #666666;
+            --cor-borda: #e0e0e0;
             --cor-erro: #ef4444;
-            --cor-sucesso: #22c55e;
-            --cor-esgotado: #94a3b8;
+            --cor-sucesso: #00BFA5;
+            --cor-esgotado: #999999;
+            --cor-acento: #00BFA5;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -31,34 +32,42 @@
         }
 
         header {
-            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-primaria-escura));
-            color: white;
+            background: #ffffff;
+            border-bottom: 2px solid var(--cor-primaria);
             padding: 2.5rem 1.5rem;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        header h1 { font-size: 2rem; margin-bottom: 0.5rem; font-weight: 700; }
-        header p { font-size: 1.1rem; opacity: 0.9; }
+        header .logo-img {
+            max-height: 80px;
+            max-width: 200px;
+            margin-bottom: 0.75rem;
+        }
+
+        header p { font-size: 1.05rem; color: var(--cor-texto-claro); }
 
         header .data-evento {
             margin-top: 0.75rem;
-            font-size: 0.95rem;
-            background: rgba(255,255,255,0.15);
+            font-size: 0.9rem;
+            background: rgba(0, 191, 165, 0.08);
+            border: 1px solid var(--cor-primaria);
             display: inline-block;
-            padding: 0.3rem 1rem;
+            padding: 0.3rem 1.2rem;
             border-radius: 999px;
+            color: var(--cor-primaria-escura);
+            font-weight: 600;
         }
 
         .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
 
         .instrucoes {
-            background: var(--cor-secundaria);
-            border-left: 4px solid var(--cor-primaria);
+            background: rgba(0, 191, 165, 0.04);
+            border-left: 3px solid var(--cor-primaria);
             padding: 1rem 1.5rem;
-            border-radius: 8px;
+            border-radius: 0 8px 8px 0;
             margin-bottom: 2rem;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            color: var(--cor-texto);
         }
         .instrucoes strong { color: var(--cor-primaria-escura); }
 
@@ -68,13 +77,13 @@
         }
 
         .filtro-btn {
-            padding: 0.5rem 1.25rem; border: 2px solid var(--cor-borda);
-            background: white; border-radius: 999px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 600; color: var(--cor-texto-claro);
+            padding: 0.5rem 1.1rem; border: 1px solid var(--cor-borda);
+            background: #fff; border-radius: 999px; cursor: pointer;
+            font-size: 0.85rem; font-weight: 600; color: var(--cor-texto-claro);
             transition: all 0.2s;
         }
         .filtro-btn:hover { border-color: var(--cor-primaria); color: var(--cor-primaria); }
-        .filtro-btn.ativo { background: var(--cor-primaria); border-color: var(--cor-primaria); color: white; }
+        .filtro-btn.ativo { background: var(--cor-primaria); border-color: var(--cor-primaria); color: #fff; }
 
         .grid-atividades {
             display: grid;
@@ -83,55 +92,56 @@
         }
 
         .card-atividade {
-            background: white; border-radius: 12px; padding: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            background: var(--cor-card); border-radius: 12px; padding: 1.5rem;
             border: 1px solid var(--cor-borda);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
             transition: all 0.3s; display: flex; flex-direction: column;
         }
-        .card-atividade:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .card-atividade:hover { box-shadow: 0 4px 16px rgba(0,191,165,0.12); border-color: var(--cor-primaria); transform: translateY(-2px); }
 
         .card-dia {
-            font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.5px; color: var(--cor-primaria); margin-bottom: 0.5rem;
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--cor-primaria); margin-bottom: 0.5rem;
         }
 
-        .card-titulo { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--cor-texto); }
+        .card-titulo { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--cor-texto); }
 
-        .card-descricao { font-size: 0.85rem; color: var(--cor-texto-claro); margin-bottom: 0.5rem; }
+        .card-descricao { font-size: 0.82rem; color: var(--cor-texto-claro); margin-bottom: 0.5rem; }
 
-        .card-local { font-size: 0.85rem; color: var(--cor-texto-claro); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem; }
+        .card-local { font-size: 0.82rem; color: var(--cor-texto-claro); margin-bottom: 1rem; }
 
         .form-group { margin-bottom: 1rem; }
 
         .form-group label {
-            display: block; font-size: 0.85rem; font-weight: 600;
+            display: block; font-size: 0.82rem; font-weight: 600;
             margin-bottom: 0.3rem; color: var(--cor-texto);
         }
 
         .form-group select, .form-group input {
-            width: 100%; padding: 0.6rem; border: 2px solid var(--cor-borda);
-            border-radius: 8px; font-size: 0.95rem; font-family: inherit;
-            transition: border-color 0.2s; background: white; color: var(--cor-texto);
+            width: 100%; padding: 0.6rem; border: 1px solid var(--cor-borda);
+            border-radius: 8px; font-size: 0.9rem; font-family: inherit;
+            transition: border-color 0.2s; background: #fff; color: var(--cor-texto);
         }
         .form-group select:focus, .form-group input:focus { outline: none; border-color: var(--cor-primaria); }
         .form-group.erro input, .form-group.erro select { border-color: var(--cor-erro); }
 
-        .erro-msg { color: var(--cor-erro); font-size: 0.8rem; margin-top: 0.25rem; display: none; }
+        .erro-msg { color: var(--cor-erro); font-size: 0.78rem; margin-top: 0.25rem; display: none; }
         .form-group.erro .erro-msg { display: block; }
 
         .vagas-display {
-            font-size: 0.85rem; margin-top: 0.4rem; font-weight: 600;
+            font-size: 0.82rem; margin-top: 0.4rem; font-weight: 600;
             min-height: 1.2rem;
         }
-        .vagas-ok { color: #15803d; }
-        .vagas-poucas { color: #b45309; }
-        .vagas-esgotado { color: #b91c1c; }
+        .vagas-ok { color: var(--cor-primaria-escura); }
+        .vagas-poucas { color: #f59e0b; }
+        .vagas-esgotado { color: var(--cor-erro); }
+        .vagas-ilimitado { color: var(--cor-primaria-escura); }
 
         .btn-inscrever {
             width: 100%; padding: 0.7rem; border: none; border-radius: 8px;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer;
-            transition: all 0.2s; background: var(--cor-primaria); color: white;
-            margin-top: 0.5rem;
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; background: var(--cor-primaria); color: #fff;
+            margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .btn-inscrever:hover { background: var(--cor-primaria-escura); }
         .btn-inscrever:disabled { background: var(--cor-esgotado); cursor: not-allowed; }
@@ -139,23 +149,25 @@
         /* MODAL */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 1000;
+            background: rgba(0,0,0,0.4); z-index: 1000;
             justify-content: center; align-items: center; padding: 1rem;
         }
         .modal-overlay.ativo { display: flex; }
 
         .modal {
-            background: white; border-radius: 16px; padding: 2rem;
+            background: #fff; border: 1px solid var(--cor-borda);
+            border-radius: 16px; padding: 2rem;
             max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto;
             animation: slideUp 0.3s ease;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
         }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .modal h2 { margin-bottom: 0.5rem; color: var(--cor-texto); }
 
         .modal-resumo {
-            background: var(--cor-secundaria); padding: 1rem;
-            border-radius: 8px; margin: 1rem 0; font-size: 0.95rem;
+            background: rgba(0, 191, 165, 0.05); border: 1px solid var(--cor-borda);
+            padding: 1rem; border-radius: 8px; margin: 1rem 0; font-size: 0.9rem;
         }
         .modal-resumo div { margin-bottom: 0.3rem; }
         .modal-resumo strong { color: var(--cor-primaria-escura); }
@@ -163,16 +175,17 @@
         .botoes-modal { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
 
         .btn-secundario {
-            flex: 1; padding: 0.7rem; border: 2px solid var(--cor-borda);
-            border-radius: 8px; font-size: 0.95rem; font-weight: 600;
-            cursor: pointer; background: white; color: var(--cor-texto); transition: all 0.2s;
+            flex: 1; padding: 0.7rem; border: 1px solid var(--cor-borda);
+            border-radius: 8px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; background: #fff; color: var(--cor-texto-claro); transition: all 0.2s;
         }
-        .btn-secundario:hover { border-color: var(--cor-texto-claro); }
+        .btn-secundario:hover { border-color: var(--cor-texto-claro); color: var(--cor-texto); }
 
         .btn-primario {
             flex: 1; padding: 0.7rem; border: none; border-radius: 8px;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer;
-            background: var(--cor-primaria); color: white; transition: all 0.2s;
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            background: var(--cor-primaria); color: #fff; transition: all 0.2s;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .btn-primario:hover { background: var(--cor-primaria-escura); }
         .btn-primario:disabled { background: var(--cor-esgotado); cursor: not-allowed; }
@@ -180,19 +193,17 @@
         .sucesso-msg { display: none; text-align: center; padding: 2rem 1rem; }
         .sucesso-msg.show { display: block; }
         .sucesso-icone { font-size: 3rem; margin-bottom: 1rem; }
-        .sucesso-msg h3 { color: var(--cor-sucesso); margin-bottom: 0.5rem; }
+        .sucesso-msg h3 { color: var(--cor-primaria-escura); margin-bottom: 0.5rem; }
         .sucesso-msg p { color: var(--cor-texto-claro); margin-bottom: 1.5rem; }
 
-        .erro-global {
-            display: none; text-align: center; padding: 2rem 1rem;
-        }
+        .erro-global { display: none; text-align: center; padding: 2rem 1rem; }
         .erro-global.show { display: block; }
         .erro-global h3 { color: var(--cor-erro); margin-bottom: 0.5rem; }
         .erro-global p { color: var(--cor-texto-claro); margin-bottom: 1.5rem; }
 
         .loading { text-align: center; padding: 3rem 1rem; color: var(--cor-texto-claro); }
         .spinner {
-            border: 4px solid var(--cor-borda); border-top: 4px solid var(--cor-primaria);
+            border: 3px solid var(--cor-borda); border-top: 3px solid var(--cor-primaria);
             border-radius: 50%; width: 40px; height: 40px;
             animation: spin 1s linear infinite; margin: 0 auto 1rem;
         }
@@ -201,11 +212,11 @@
         .sem-resultados { text-align: center; padding: 3rem 1rem; color: var(--cor-texto-claro); display: none; }
         .sem-resultados.show { display: block; }
 
-        footer { text-align: center; padding: 2rem 1.5rem; color: var(--cor-texto-claro); font-size: 0.85rem; }
+        footer { text-align: center; padding: 2rem 1.5rem; color: var(--cor-texto-claro); font-size: 0.8rem; border-top: 1px solid var(--cor-borda); margin-top: 2rem; }
+        footer .brand { color: var(--cor-primaria-escura); font-weight: 700; }
 
         @media (max-width: 600px) {
-            header h1 { font-size: 1.5rem; }
-            header p { font-size: 0.95rem; }
+            header .logo-img { max-height: 60px; }
             .grid-atividades { grid-template-columns: 1fr; }
             .container { padding: 1.5rem 1rem; }
         }
@@ -214,15 +225,15 @@
 <body>
 
     <header>
-        <h1>🏥 Semana da Saúde</h1>
-        <p>Inscrições para atividades</p>
-        <div class="data-evento" id="data-evento">11 a 15 de Agosto de 2025</div>
+        <img src="BeWell.png" alt="Be Well" class="logo-img">
+        <p>Semana da Saúde — Inscrições</p>
+        <div class="data-evento" id="data-evento">14 a 18 de Setembro de 2026</div>
     </header>
 
     <div class="container">
         <div class="instrucoes">
             <strong>📋 Como se inscrever:</strong>
-            Escolha a atividade, selecione o horário desejado, preencha seu nome e confirme.
+            Escolha a atividade, selecione o horário desejado, preencha seu nome e Knox ID, e confirme.
             As vagas são controladas automaticamente em tempo real!
             <br><strong>⚠️ Atenção:</strong> As vagas são limitadas. Garanta sua participação o quanto antes!
         </div>
@@ -261,7 +272,7 @@
 
                 <div class="botoes-modal">
                     <button class="btn-secundario" onclick="fecharModal()">Cancelar</button>
-                    <button class="btn-primario" id="btn-confirmar" onclick="enviarInscricao()">Confirmar Inscrição</button>
+                    <button class="btn-primario" id="btn-confirmar" onclick="enviarInscricao()">Confirmar</button>
                 </div>
             </div>
 
@@ -282,232 +293,154 @@
     </div>
 
     <footer>
-        Semana da Saúde © 2025 — A saúde é o nosso compromisso.
+        <span class="brand">Be Well</span> — Semana da Saúde © 2026
     </footer>
 
     <script>
         /* ================================================================
            ⚙️  CONFIGURAÇÃO  ⚙️
-         ================================================================
-
-         IMPORTANTE: Você precisa colar aqui as chaves do Supabase.
-         Siga o arquivo "COMO-CONFIGURAR-SUPABASE.txt" para obter essas chaves.
-
          ================================================================ */
 
-        // 🔑 Chaves do Supabase (cole aqui):
+        // 🔑 Chaves do Supabase:
         const SUPABASE_URL = "https://ihkbrfnkqrbpsgcgwrex.supabase.co";
         const SUPABASE_KEY = "sb_publishable_2n8EQKEfvAWfS58_-RPz7w_xkHX_tvz";
 
-        // 📅 Data do evento (texto livre):
-        const DATA_EVENTO = "11 a 15 de Agosto de 2025";
+        // 📅 Data do evento:
+        const DATA_EVENTO = "14 a 18 de Setembro de 2026";
 
-        // 📋 Lista de atividades:
-        //    Cada atividade tem um título, dia, local, descrição e uma
-        //    lista de horários com o limite de vagas de cada um.
-        //    Para adicionar/remover horários, edite o array "horarios".
-        //    Para mudar o limite de vagas, altere o número em "vagas".
+        // 📋 Lista de atividades — Semana da Saúde Be Well (14 a 18/09/2026)
+        //    14/09 = Segunda-feira | 15/09 = Terça-feira | 16/09 = Quarta-feira | 18/09 = Sexta-feira
         const ATIVIDADES = [
-            // === SEGUNDA-FEIRA ===
+            // === 14/09 (Segunda-feira) ===
             {
-                titulo: "Aferição de Pressão Arterial",
-                dia: "Segunda-feira",
-                local: "Enfermaria",
-                descricao: "Verificação de pressão arterial com enfermeiros.",
+                titulo: "Blitz da Saúde",
+                dia: "14/09 (Segunda)",
+                local: "Área Comum",
+                descricao: "Avaliação geral de saúde. Agendamentos a cada 20 minutos.",
                 horarios: [
-                    { horario: "08:00 - 09:00", vagas: 12 },
-                    { horario: "09:00 - 10:00", vagas: 12 },
-                    { horario: "10:00 - 11:00", vagas: 10 },
+                    { horario: "09:00", vagas: 3 },
+                    { horario: "09:20", vagas: 3 },
+                    { horario: "09:40", vagas: 3 },
+                    { horario: "10:00", vagas: 3 },
+                    { horario: "10:20", vagas: 3 },
+                    { horario: "10:40", vagas: 3 },
+                    { horario: "11:00", vagas: 3 },
+                    { horario: "11:20", vagas: 3 },
+                    { horario: "11:40", vagas: 3 },
+                    { horario: "12:00", vagas: 3 },
+                    { horario: "13:00", vagas: 3 },
+                    { horario: "13:20", vagas: 3 },
+                    { horario: "13:40", vagas: 3 },
+                    { horario: "14:00", vagas: 3 },
+                    { horario: "14:20", vagas: 3 },
+                    { horario: "14:40", vagas: 3 },
+                    { horario: "15:00", vagas: 3 },
+                    { horario: "15:20", vagas: 3 },
+                    { horario: "15:40", vagas: 3 },
+                    { horario: "16:00", vagas: 3 },
+                    { horario: "16:20", vagas: 3 },
+                    { horario: "16:40", vagas: 3 },
                 ]
             },
             {
-                titulo: "Exame de Glicemia",
-                dia: "Segunda-feira",
-                local: "Sala 1",
-                descricao: "Medição de glicemia em jejum.",
+                titulo: "Yoga",
+                dia: "14/09 (Segunda)",
+                local: "Sala de Atividades",
+                descricao: "Prática de yoga para todos os níveis.",
                 horarios: [
-                    { horario: "08:00 - 09:00", vagas: 8 },
-                    { horario: "09:00 - 10:00", vagas: 8 },
+                    { horario: "10:30", vagas: 15 },
+                    { horario: "11:30", vagas: 15 },
+                    { horario: "14:00", vagas: 15 },
+                    { horario: "15:00", vagas: 15 },
                 ]
             },
+
+            // === 15/09 (Terça-feira) ===
             {
-                titulo: "Palestra: Alimentação Saudável",
-                dia: "Segunda-feira",
+                titulo: "Palestra: Qualidade de Vida com Dr. Riani",
+                dia: "15/09 (Terça)",
                 local: "Auditório",
-                descricao: "Dicas de nutrição e bem-estar no dia a dia.",
+                descricao: "Palestra sobre qualidade de vida e bem-estar.",
                 horarios: [
-                    { horario: "14:00 - 15:00", vagas: 40 },
+                    { horario: "10:00", vagas: 50 },
                 ]
             },
             {
-                titulo: "Ginástica Laboral",
-                dia: "Segunda-feira",
-                local: "Pátio",
-                descricao: "Alongamento e exercícios laborais.",
+                titulo: "Sessão de Mindfulness",
+                dia: "15/09 (Terça)",
+                local: "Sala de Atividades",
+                descricao: "Prática de atenção plena e meditação guiada. Vagas ilimitadas.",
                 horarios: [
-                    { horario: "15:00 - 15:30", vagas: 30 },
-                    { horario: "16:00 - 16:30", vagas: 30 },
-                ]
-            },
-
-            // === TERÇA-FEIRA ===
-            {
-                titulo: "Avaliação Física",
-                dia: "Terça-feira",
-                local: "Sala 3",
-                descricao: "Avaliação física com educador físico.",
-                horarios: [
-                    { horario: "08:00 - 09:00", vagas: 8 },
-                    { horario: "09:00 - 10:00", vagas: 8 },
-                    { horario: "10:00 - 11:00", vagas: 6 },
+                    { horario: "15:00", vagas: 999 },
+                    { horario: "15:40", vagas: 999 },
+                    { horario: "16:20", vagas: 999 },
                 ]
             },
             {
-                titulo: "Aferição de Pressão Arterial",
-                dia: "Terça-feira",
-                local: "Enfermaria",
-                descricao: "Verificação de pressão arterial.",
+                titulo: "Sessão de Alongamento",
+                dia: "15/09 (Terça)",
+                local: "Área Comum",
+                descricao: "Alongamento guiado das 10h às 18h. Vagas ilimitadas.",
                 horarios: [
-                    { horario: "14:00 - 15:00", vagas: 12 },
-                ]
-            },
-            {
-                titulo: "Workshop: Ginástica Laboral",
-                dia: "Terça-feira",
-                local: "Pátio",
-                descricao: "Prática guiada de exercícios laborais.",
-                horarios: [
-                    { horario: "15:00 - 16:00", vagas: 25 },
-                ]
-            },
-            {
-                titulo: "Orientação Nutricional",
-                dia: "Terça-feira",
-                local: "Sala 2",
-                descricao: "Consulta rápida com nutricionista.",
-                horarios: [
-                    { horario: "16:00 - 17:00", vagas: 15 },
+                    { horario: "10:00 às 18:00 (livre)", vagas: 999 },
                 ]
             },
 
-            // === QUARTA-FEIRA ===
+            // === 16/09 (Quarta-feira) ===
             {
-                titulo: "Exame de Glicemia",
-                dia: "Quarta-feira",
-                local: "Enfermaria",
-                descricao: "Medição de glicemia em jejum.",
+                titulo: "Ultrassom (fígado/tireóide) + Foto 4D Gestantes HME",
+                dia: "16/09 (Quarta)",
+                local: "Sala Médica",
+                descricao: "Ultrassonografia de fígado ou tireóide + foto 4D para gestantes. Atendimento a cada 30 minutos.",
                 horarios: [
-                    { horario: "07:00 - 08:00", vagas: 10 },
-                    { horario: "08:00 - 09:00", vagas: 10 },
-                    { horario: "09:00 - 10:00", vagas: 8 },
-                ]
-            },
-            {
-                titulo: "Aferição de Pressão Arterial",
-                dia: "Quarta-feira",
-                local: "Enfermaria",
-                descricao: "Verificação de pressão arterial.",
-                horarios: [
-                    { horario: "10:00 - 11:00", vagas: 12 },
-                ]
-            },
-            {
-                titulo: "Palestra: Saúde Mental",
-                dia: "Quarta-feira",
-                local: "Auditório",
-                descricao: "Bem-estar emocional no trabalho.",
-                horarios: [
-                    { horario: "14:00 - 15:00", vagas: 50 },
-                    { horario: "15:00 - 16:00", vagas: 50 },
-                ]
-            },
-            {
-                titulo: "Massagem Relaxante",
-                dia: "Quarta-feira",
-                local: "Sala 2",
-                descricao: "Sessões de massagem rápida (15 min).",
-                horarios: [
-                    { horario: "16:00 - 17:00", vagas: 6 },
+                    { horario: "10:00", vagas: 1 },
+                    { horario: "10:30", vagas: 1 },
+                    { horario: "11:00", vagas: 1 },
+                    { horario: "11:30", vagas: 1 },
+                    { horario: "12:00", vagas: 1 },
+                    { horario: "12:30", vagas: 1 },
+                    { horario: "13:00", vagas: 1 },
+                    { horario: "13:30", vagas: 1 },
+                    { horario: "14:00", vagas: 1 },
+                    { horario: "14:30", vagas: 1 },
+                    { horario: "15:00", vagas: 1 },
+                    { horario: "15:30", vagas: 1 },
+                    { horario: "16:00", vagas: 1 },
+                    { horario: "16:30", vagas: 1 },
+                    { horario: "17:00", vagas: 1 },
+                    { horario: "17:30", vagas: 1 },
                 ]
             },
 
-            // === QUINTA-FEIRA ===
+            // === 18/09 (Sexta-feira) ===
             {
-                titulo: "Massagem Relaxante",
-                dia: "Quinta-feira",
-                local: "Sala 2",
-                descricao: "Sessões de massagem rápida (15 min).",
+                titulo: "Ultrassom (fígado/tireóide) + Foto 4D Gestantes HME",
+                dia: "18/09 (Sexta)",
+                local: "Sala Médica",
+                descricao: "Ultrassonografia de fígado ou tireóide + foto 4D para gestantes. Atendimento a cada 30 minutos.",
                 horarios: [
-                    { horario: "08:00 - 09:00", vagas: 6 },
-                    { horario: "09:00 - 10:00", vagas: 6 },
-                    { horario: "10:00 - 11:00", vagas: 6 },
-                    { horario: "14:00 - 15:00", vagas: 6 },
-                    { horario: "15:00 - 16:00", vagas: 6 },
-                ]
-            },
-            {
-                titulo: "Avaliação Postural",
-                dia: "Quinta-feira",
-                local: "Sala 3",
-                descricao: "Avaliação com fisioterapeuta.",
-                horarios: [
-                    { horario: "09:00 - 10:00", vagas: 8 },
-                    { horario: "10:00 - 11:00", vagas: 8 },
-                ]
-            },
-            {
-                titulo: "Ginástica Laboral",
-                dia: "Quinta-feira",
-                local: "Pátio",
-                descricao: "Alongamento e exercícios laborais.",
-                horarios: [
-                    { horario: "16:00 - 16:30", vagas: 30 },
-                ]
-            },
-
-            // === SEXTA-FEIRA ===
-            {
-                titulo: "Avaliação Postural",
-                dia: "Sexta-feira",
-                local: "Sala 3",
-                descricao: "Avaliação com fisioterapeuta.",
-                horarios: [
-                    { horario: "08:00 - 09:00", vagas: 8 },
-                    { horario: "09:00 - 10:00", vagas: 8 },
-                ]
-            },
-            {
-                titulo: "Aferição de Pressão Arterial",
-                dia: "Sexta-feira",
-                local: "Enfermaria",
-                descricao: "Verificação de pressão arterial.",
-                horarios: [
-                    { horario: "10:00 - 11:00", vagas: 12 },
-                ]
-            },
-            {
-                titulo: "Orientação Nutricional",
-                dia: "Sexta-feira",
-                local: "Sala 2",
-                descricao: "Consulta rápida com nutricionista.",
-                horarios: [
-                    { horario: "14:00 - 15:00", vagas: 12 },
-                    { horario: "15:00 - 16:00", vagas: 12 },
-                ]
-            },
-            {
-                titulo: "Encerramento: Dicas de Bem-Estar",
-                dia: "Sexta-feira",
-                local: "Auditório",
-                descricao: "Palestra de encerramento da Semana da Saúde.",
-                horarios: [
-                    { horario: "16:00 - 17:00", vagas: 60 },
+                    { horario: "10:00", vagas: 1 },
+                    { horario: "10:30", vagas: 1 },
+                    { horario: "11:00", vagas: 1 },
+                    { horario: "11:30", vagas: 1 },
+                    { horario: "12:00", vagas: 1 },
+                    { horario: "12:30", vagas: 1 },
+                    { horario: "13:00", vagas: 1 },
+                    { horario: "13:30", vagas: 1 },
+                    { horario: "14:00", vagas: 1 },
+                    { horario: "14:30", vagas: 1 },
+                    { horario: "15:00", vagas: 1 },
+                    { horario: "15:30", vagas: 1 },
+                    { horario: "16:00", vagas: 1 },
+                    { horario: "16:30", vagas: 1 },
+                    { horario: "17:00", vagas: 1 },
+                    { horario: "17:30", vagas: 1 },
                 ]
             },
         ];
 
         /* ================================================================
-           FIM DA CONFIGURAÇÃO — Não é necessário editar abaixo desta linha
+           FIM DA CONFIGURAÇÃO
          ================================================================ */
 
         let diaSelecionado = "Todos";
@@ -516,19 +449,15 @@
         let supabaseClient = null;
         let inscricoesCache = {};
 
-        // Inicializa
         document.getElementById('data-evento').textContent = DATA_EVENTO;
 
-        // Verifica se as chaves do Supabase foram configuradas
         if (SUPABASE_URL === "COLE_SUA_URL_AQUI" || SUPABASE_KEY === "COLE_SUA_KEY_AQUI") {
-            // Modo demo (sem Supabase configurado)
             document.getElementById('loading').style.display = 'none';
             document.getElementById('grid-atividades').style.display = 'grid';
             renderizarFiltroDias();
             renderizarAtividades();
             mostrarAvisoConfig();
         } else {
-            // Inicializa Supabase
             try {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 iniciar();
@@ -539,8 +468,8 @@
 
         function mostrarAvisoConfig() {
             const aviso = document.createElement('div');
-            aviso.style.cssText = 'background:#fef3c7;border:2px solid #f59e0b;padding:1rem 1.5rem;border-radius:8px;margin-bottom:1.5rem;font-size:0.9rem;color:#92400e;';
-            aviso.innerHTML = '<strong>⚠️ Modo Demonstração:</strong> O Supabase ainda não foi configurado. As inscrições não serão salvas. Siga o arquivo "COMO-CONFIGURAR-SUPABASE.txt" para ativar o controle real de vagas.';
+            aviso.style.cssText = 'background:#fffbeb;border:1px solid #f59e0b;padding:1rem 1.5rem;border-radius:8px;margin-bottom:1.5rem;font-size:0.85rem;color:#92400e;';
+            aviso.innerHTML = '<strong>⚠️ Modo Demonstração:</strong> O Supabase ainda não foi configurado. As inscrições não serão salvas.';
             document.querySelector('.container').insertBefore(aviso, document.getElementById('filtro-dias'));
         }
 
@@ -552,18 +481,13 @@
             renderizarAtividades();
         }
 
-        // Carrega todas as inscrições do Supabase e conta por atividade+horario
         async function carregarInscricoes() {
             if (!supabaseClient) return;
-
             try {
                 const { data, error } = await supabaseClient
                     .from('inscricoes')
                     .select('atividade, dia, horario');
-
                 if (error) throw error;
-
-                // Conta inscrições por chave: "atividade|dia|horario"
                 inscricoesCache = {};
                 data.forEach(row => {
                     const chave = `${row.atividade}|${row.dia}|${row.horario}`;
@@ -574,7 +498,6 @@
             }
         }
 
-        // Retorna quantas vagas já foram ocupadas para uma atividade+horario
         function getOcupadas(titulo, dia, horario) {
             const chave = `${titulo}|${dia}|${horario}`;
             return inscricoesCache[chave] || 0;
@@ -611,12 +534,22 @@
             semResultados.classList.remove('show');
 
             container.innerHTML = atividadesFiltradas.map((atividade, index) => {
-                // Gera as opções do dropdown de horários
                 const opcoesHorarios = atividade.horarios.map(h => {
                     const ocupadas = getOcupadas(atividade.titulo, atividade.dia, h.horario);
                     const restantes = h.vagas - ocupadas;
                     const esgotado = restantes <= 0;
-                    return `<option value="${h.horario}" ${esgotado ? 'disabled' : ''}>${h.horario} — ${esgotado ? 'Esgotado' : restantes + ' vaga' + (restantes !== 1 ? 's' : '') + ' restante' + (restantes !== 1 ? 's' : '')}</option>`;
+                    const ilimitado = h.vagas >= 999;
+
+                    let textoVaga;
+                    if (ilimitado) {
+                        textoVaga = 'Vagas ilimitadas';
+                    } else if (esgotado) {
+                        textoVaga = 'Esgotado';
+                    } else {
+                        textoVaga = restantes + ' vaga' + (restantes !== 1 ? 's' : '') + ' restante' + (restantes !== 1 ? 's' : '');
+                    }
+
+                    return `<option value="${h.horario}" ${esgotado ? 'disabled' : ''}>${h.horario} — ${textoVaga}</option>`;
                 }).join('');
 
                 return `
@@ -648,25 +581,23 @@
             const btn = document.getElementById(`btn-${index}`);
 
             const horario = select.value;
+            if (!horario) { display.innerHTML = ''; btn.disabled = true; return; }
 
-            if (!horario) {
-                display.innerHTML = '';
-                btn.disabled = true;
-                return;
-            }
-
-            // Encontra o horário na atividade
             const horarioData = atividade.horarios.find(h => h.horario === horario);
             if (!horarioData) return;
 
             const ocupadas = getOcupadas(atividade.titulo, atividade.dia, horario);
             const restantes = horarioData.vagas - ocupadas;
+            const ilimitado = horarioData.vagas >= 999;
 
-            if (restantes <= 0) {
+            if (ilimitado) {
+                display.innerHTML = '<span class="vagas-ilimitado">∞ Vagas ilimitadas</span>';
+                btn.disabled = false;
+            } else if (restantes <= 0) {
                 display.innerHTML = '<span class="vagas-esgotado">Esgotado</span>';
                 btn.disabled = true;
             } else if (restantes <= 3) {
-                display.innerHTML = `<span class="vagas-poucas">⚠️ Apenas ${restantes} vaga${restantes !== 1 ? 's' : ''} restante${restantes !== 1 ? 's' : ''}!</span>`;
+                display.innerHTML = `<span class="vagas-poucas">⚠️ Apenas ${restantes} vaga${restantes !== 1 ? 's' : ''}!</span>`;
                 btn.disabled = false;
             } else {
                 display.innerHTML = `<span class="vagas-ok">✅ ${restantes} vaga${restantes !== 1 ? 's' : ''} restante${restantes !== 1 ? 's' : ''}</span>`;
@@ -678,28 +609,24 @@
             const atividade = (diaSelecionado === "Todos" ? ATIVIDADES : ATIVIDADES.filter(a => a.dia === diaSelecionado))[index];
             const select = document.getElementById(`select-horario-${index}`);
             const horario = select.value;
-
             if (!horario) return;
 
-            // Verifica vagas novamente (caso alguém acabou de se inscrever)
             const horarioData = atividade.horarios.find(h => h.horario === horario);
             const ocupadas = getOcupadas(atividade.titulo, atividade.dia, horario);
             const restantes = horarioData.vagas - ocupadas;
 
-            if (restantes <= 0) {
-                alert('As vagas para este horário acabaram de se esgotar. Por favor, escolha outro horário.');
+            if (restantes <= 0 && horarioData.vagas < 999) {
+                alert('As vagas para este horário acabaram de se esgotar. Escolha outro horário.');
                 return;
             }
 
             atividadeSelecionada = atividade;
             horarioSelecionado = horario;
 
-            // Resetar formulário
             document.getElementById('input-nome').value = '';
             document.getElementById('input-area').value = '';
             document.getElementById('grupo-nome').classList.remove('erro');
 
-            // Preencher resumo
             document.getElementById('modal-resumo').innerHTML = `
                 <div><strong>Atividade:</strong> ${atividade.titulo}</div>
                 <div><strong>Dia:</strong> ${atividade.dia}</div>
@@ -707,12 +634,11 @@
                 <div><strong>Local:</strong> ${atividade.local}</div>
             `;
 
-            // Mostrar modal
             document.getElementById('modal-conteudo').style.display = 'block';
             document.getElementById('sucesso-msg').classList.remove('show');
             document.getElementById('erro-global').classList.remove('show');
             document.getElementById('btn-confirmar').disabled = false;
-            document.getElementById('btn-confirmar').textContent = 'Confirmar Inscrição';
+            document.getElementById('btn-confirmar').textContent = 'Confirmar';
             document.getElementById('modal-overlay').classList.add('ativo');
 
             setTimeout(() => document.getElementById('input-nome').focus(), 100);
@@ -742,33 +668,29 @@
             }
             document.getElementById('grupo-nome').classList.remove('erro');
 
-            // Se Supabase não está configurado, mostra aviso
             if (!supabaseClient) {
-                alert('⚠️ O Supabase ainda não foi configurado!\n\nSiga o arquivo "COMO-CONFIGURAR-SUPABASE.txt" para ativar as inscrições reais.');
+                alert('⚠️ O Supabase não está configurado!');
                 return;
             }
 
-            // Desabilita o botão e mostra "Enviando..."
             const btn = document.getElementById('btn-confirmar');
             btn.disabled = true;
             btn.textContent = 'Enviando...';
 
             try {
-                // Verifica vagas mais uma vez antes de salvar
                 const ocupadas = getOcupadas(atividadeSelecionada.titulo, atividadeSelecionada.dia, horarioSelecionado);
                 const horarioData = atividadeSelecionada.horarios.find(h => h.horario === horarioSelecionado);
                 const restantes = horarioData.vagas - ocupadas;
 
-                if (restantes <= 0) {
+                if (restantes <= 0 && horarioData.vagas < 999) {
                     document.getElementById('modal-conteudo').style.display = 'none';
-                    document.getElementById('erro-texto').textContent = 'As vagas para este horário acabaram de se esgotar. Por favor, tente outro horário.';
+                    document.getElementById('erro-texto').textContent = 'As vagas para este horário acabaram de se esgotar. Tente outro horário.';
                     document.getElementById('erro-global').classList.add('show');
                     btn.disabled = false;
-                    btn.textContent = 'Confirmar Inscrição';
+                    btn.textContent = 'Confirmar';
                     return;
                 }
 
-                // Salva no Supabase
                 const { data, error } = await supabaseClient
                     .from('inscricoes')
                     .insert([
@@ -784,31 +706,27 @@
 
                 if (error) throw error;
 
-                // Atualiza o cache local
                 const chave = `${atividadeSelecionada.titulo}|${atividadeSelecionada.dia}|${horarioSelecionado}`;
                 inscricoesCache[chave] = (inscricoesCache[chave] || 0) + 1;
 
-                // Sucesso!
                 document.getElementById('modal-conteudo').style.display = 'none';
                 document.getElementById('sucesso-texto').textContent =
-                    `Sua inscrição para "${atividadeSelecionada.titulo}" (${atividadeSelecionada.dia} às ${horarioSelecionado}) foi confirmada com sucesso!`;
+                    `Sua inscrição para "${atividadeSelecionada.titulo}" (${atividadeSelecionada.dia} às ${horarioSelecionado}) foi confirmada!`;
                 document.getElementById('sucesso-msg').classList.add('show');
 
-                // Re-renderiza as atividades para atualizar as vagas
                 renderizarAtividades();
 
             } catch (e) {
                 console.error('Erro ao salvar inscrição:', e);
                 document.getElementById('modal-conteudo').style.display = 'none';
-                document.getElementById('erro-texto').textContent = 'Não foi possível salvar sua inscrição. Tente novamente em alguns instantes. Erro: ' + e.message;
+                document.getElementById('erro-texto').textContent = 'Não foi possível salvar. Tente novamente. Erro: ' + e.message;
                 document.getElementById('erro-global').classList.add('show');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Confirmar Inscrição';
+                btn.textContent = 'Confirmar';
             }
         }
 
-        // Enter para enviar
         document.getElementById('input-area').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') enviarInscricao();
         });
