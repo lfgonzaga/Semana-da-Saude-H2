@@ -313,7 +313,8 @@
                 <div class="sucesso-icone">✅</div>
                 <h3>Inscrição Confirmada!</h3>
                 <p id="sucesso-texto"></p>
-                <button class="btn-primario" style="max-width: 200px; margin: 0 auto;" onclick="fecharModal()">Fechar</button>
+                <button class="btn-primario" style="max-width: 280px; margin: 0.5rem auto 0.5rem;" id="btn-calendario" onclick="baixarICS()">📅 Adicionar ao calendário (Outlook)</button>
+                <button class="btn-secundario" style="max-width: 200px; margin: 0 auto;" onclick="fecharModal()">Fechar</button>
             </div>
 
             <div class="erro-global" id="erro-global">
@@ -837,6 +838,96 @@
         document.getElementById('input-nome').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') document.getElementById('input-area').focus();
         });
+
+        /* ================================================================
+           📅  FUNÇÃO PARA GERAR ARQUIVO .ICS (CALENDÁRIO)  📅
+         ================================================================ */
+
+        function baixarICS() {
+            if (!atividadeSelecionada || !horarioSelecionado) return;
+
+            // Extrair dia e horário
+            const diaStr = atividadeSelecionada.dia; // ex: "14/09 (Segunda)"
+            const diaMatch = diaStr.match(/(\d{2})\/(\d{2})/);
+            if (!diaMatch) return;
+
+            const dia = diaMatch[1];
+            const mes = diaMatch[2];
+            const ano = "2026";
+
+            // Extrair hora de início
+            const horarioStr = horarioSelecionado;
+            const horarioMatch = horarioStr.match(/(\d{2}):(\d{2})/);
+            if (!horarioMatch) return;
+
+            const hora = horarioMatch[1];
+            const minuto = horarioMatch[2];
+
+            // Calcular horário de fim (duração padrão: 30 min para exames, 20 min para blitz, 60 min para outros)
+            let duracaoMin = 60;
+            if (atividadeSelecionada.titulo.includes("Blitz")) duracaoMin = 20;
+            else if (atividadeSelecionada.titulo.includes("Ultrassonografia")) duracaoMin = 30;
+            else if (atividadeSelecionada.titulo.includes("Mindfulness")) duracaoMin = 40;
+            else if (atividadeSelecionada.titulo.includes("Palestra")) duracaoMin = 90;
+
+            // Criar datas de início e fim
+            const dataInicio = new Date(ano, parseInt(mes) - 1, parseInt(dia), parseInt(hora), parseInt(minuto), 0);
+            const dataFim = new Date(dataInicio.getTime() + duracaoMin * 60000);
+
+            // Formatar para ICS (YYYYMMDDTHHMMSS)
+            function formatarDataICS(data) {
+                const y = data.getFullYear();
+                const m = String(data.getMonth() + 1).padStart(2, '0');
+                const d = String(data.getDate()).padStart(2, '0');
+                const h = String(data.getHours()).padStart(2, '0');
+                const min = String(data.getMinutes()).padStart(2, '0');
+                const s = String(data.getSeconds()).padStart(2, '0');
+                return `${y}${m}${d}T${h}${min}${s}`;
+            }
+
+            const dtStart = formatarDataICS(dataInicio);
+            const dtEnd = formatarDataICS(dataFim);
+            const dtStamp = formatarDataICS(new Date());
+
+            const titulo = atividadeSelecionada.titulo;
+            const local = atividadeSelecionada.local || '';
+            const nome = document.getElementById('input-nome').value.trim();
+
+            // Gerar conteúdo ICS
+            const ics = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Be Well//Semana da Saude//PT-BR',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                'UID:' + Date.now() + '@bewell.com.br',
+                'DTSTAMP:' + dtStamp,
+                'DTSTART:' + dtStart,
+                'DTEND:' + dtEnd,
+                'SUMMARY:' + titulo,
+                'DESCRIPTION:Semana da Saude - Be Well\\nInscrito: ' + nome,
+                'LOCATION:' + local,
+                'BEGIN:VALARM',
+                'TRIGGER:-PT15M',
+                'ACTION:DISPLAY',
+                'DESCRIPTION:Lembrete: ' + titulo + ' em 15 minutos',
+                'END:VALARM',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            // Download do arquivo
+            const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Semana-da-Saude-' + titulo.replace(/[^a-zA-Z0-9]/g, '_') + '.ics';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
         /* ================================================================
            🗑️  FUNÇÕES DE CANCELAMENTO DE RESERVA  🗑️
