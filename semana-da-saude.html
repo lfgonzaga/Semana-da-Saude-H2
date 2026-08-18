@@ -212,6 +212,34 @@
         .sem-resultados { text-align: center; padding: 3rem 1rem; color: var(--cor-texto-claro); display: none; }
         .sem-resultados.show { display: block; }
 
+        .btn-cancelar-reserva {
+            display: block; margin: 0 auto 2rem; padding: 0.6rem 1.5rem;
+            border: 1px solid var(--cor-erro); border-radius: 999px;
+            background: #fff; color: var(--cor-erro); font-size: 0.85rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-cancelar-reserva:hover { background: var(--cor-erro); color: #fff; }
+
+        .lista-reservas { margin: 1rem 0; }
+        .item-reserva {
+            background: rgba(0, 191, 165, 0.04); border: 1px solid var(--cor-borda);
+            border-radius: 8px; padding: 0.8rem 1rem; margin-bottom: 0.6rem;
+            display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+        }
+        .item-reserva-info { flex: 1; font-size: 0.85rem; }
+        .item-reserva-info strong { color: var(--cor-texto); }
+        .item-reserva-info div { color: var(--cor-texto-claro); font-size: 0.8rem; }
+        .btn-remover {
+            padding: 0.4rem 0.8rem; border: 1px solid var(--cor-erro);
+            border-radius: 6px; background: #fff; color: var(--cor-erro);
+            font-size: 0.78rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .btn-remover:hover { background: var(--cor-erro); color: #fff; }
+        .btn-remover:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .sem-reservas { text-align: center; color: var(--cor-texto-claro); padding: 1.5rem; font-size: 0.9rem; }
+
         footer { text-align: center; padding: 2rem 1.5rem; color: var(--cor-texto-claro); font-size: 0.8rem; border-top: 1px solid var(--cor-borda); margin-top: 2rem; }
         footer .brand { color: var(--cor-primaria-escura); font-weight: 700; }
 
@@ -227,7 +255,7 @@
     <header>
         <img src="BeWell.png" alt="Be Well" class="logo-img">
         <p>Semana da Saúde — Inscrições</p>
-        <div class="data-evento" id="data-evento">14 a 18 de Setembro de 2026</div>
+        <div class="data-evento" id="data-evento">14 a 17 de Setembro de 2026</div>
     </header>
 
     <div class="container">
@@ -250,6 +278,10 @@
         <div class="sem-resultados" id="sem-resultados">
             <p>Nenhuma atividade disponível para este dia.</p>
         </div>
+
+        <button class="btn-cancelar-reserva" onclick="abrirModalCancelamento()">
+            🗑️ Cancelar minha reserva
+        </button>
     </div>
 
     <!-- MODAL DE INSCRIÇÃO -->
@@ -266,8 +298,9 @@
                 </div>
 
                 <div class="form-group" id="grupo-area">
-                    <label for="input-area">Knox ID</label>
+                    <label for="input-area">Knox ID *</label>
                     <input type="text" id="input-area" placeholder="Digite seu Knox ID" autocomplete="organization">
+                    <div class="erro-msg">Por favor, informe seu Knox ID.</div>
                 </div>
 
                 <div class="botoes-modal">
@@ -292,6 +325,45 @@
         </div>
     </div>
 
+    <!-- MODAL DE CANCELAMENTO -->
+    <div class="modal-overlay" id="modal-cancel-overlay">
+        <div class="modal">
+            <div id="modal-cancel-conteudo">
+                <h2>Cancelar Reserva</h2>
+                <p style="font-size:0.85rem; color:var(--cor-texto-claro); margin-bottom:1rem;">
+                    Digite seu Knox ID para encontrar suas reservas.
+                </p>
+
+                <div class="form-group" id="grupo-cancel-nome">
+                    <label for="input-cancel-nome">Knox ID *</label>
+                    <input type="text" id="input-cancel-nome" placeholder="Digite seu Knox ID" autocomplete="organization">
+                    <div class="erro-msg">Por favor, informe seu Knox ID.</div>
+                </div>
+
+                <div class="botoes-modal">
+                    <button class="btn-secundario" onclick="fecharModalCancelamento()">Fechar</button>
+                    <button class="btn-primario" id="btn-buscar-reservas" onclick="buscarReservas()">Buscar reservas</button>
+                </div>
+
+                <div class="lista-reservas" id="lista-reservas"></div>
+            </div>
+
+            <div class="sucesso-msg" id="cancel-sucesso-msg">
+                <div class="sucesso-icone">✅</div>
+                <h3>Reserva Cancelada!</h3>
+                <p id="cancel-sucesso-texto"></p>
+                <button class="btn-primario" style="max-width: 200px; margin: 0 auto;" onclick="fecharModalCancelamento()">Fechar</button>
+            </div>
+
+            <div class="erro-global" id="cancel-erro-global">
+                <div class="sucesso-icone">⚠️</div>
+                <h3>Ops! Algo deu errado</h3>
+                <p id="cancel-erro-texto"></p>
+                <button class="btn-primario" style="max-width: 200px; margin: 0 auto;" onclick="fecharModalCancelamento()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <span class="brand">Be Well</span> — Semana da Saúde © 2026
     </footer>
@@ -306,10 +378,10 @@
         const SUPABASE_KEY = "sb_publishable_2n8EQKEfvAWfS58_-RPz7w_xkHX_tvz";
 
         // 📅 Data do evento:
-        const DATA_EVENTO = "14 a 18 de Setembro de 2026";
+        const DATA_EVENTO = "14 a 17 de Setembro de 2026";
 
         // 📋 Lista de atividades — Semana da Saúde Be Well (14 a 18/09/2026)
-        //    14/09 = Segunda-feira | 15/09 = Terça-feira | 16/09 = Quarta-feira | 18/09 = Sexta-feira
+        //    14/09 = Segunda-feira | 15/09 = Terça-feira | 16/09 = Quarta-feira | 17/09 = Quinta-feira
         const ATIVIDADES = [
             // === 14/09 (Segunda-feira) ===
             {
@@ -343,7 +415,7 @@
                 ]
             },
             {
-                titulo: "Yoga",
+                titulo: "Prática de Yoga",
                 dia: "14/09 (Segunda)",
                 local: "Training 3",
                 descricao: "",
@@ -355,10 +427,10 @@
                 ]
             },
 
-            // === 15/09 (Terça-feira) ===
+            // === 17/09 (Quinta-feira) ===
             {
-                titulo: "Palestra: Qualidade de Vida com Dr. Riani",
-                dia: "15/09 (Terça)",
+                titulo: "Palestra: Promoção da Qualidade de Vida, com Alta Diagnóstico",
+                dia: "17/09 (Quinta)",
                 local: "Espaço Café",
                 descricao: "",
                 horarios: [
@@ -377,7 +449,7 @@
                 ]
             },
             {
-                titulo: "Sessão de Alongamento",
+                titulo: "Prática de Alongamento",
                 dia: "15/09 (Terça)",
                 local: "Training 1",
                 descricao: "",
@@ -388,7 +460,7 @@
 
             // === 16/09 (Quarta-feira) ===
             {
-                titulo: "Ultrassom (fígado/tireóide) + Foto 4D Gestantes HME",
+                titulo: "Exames de Ultrassonografia Preventiva e Obstétrica (4D)",
                 dia: "16/09 (Quarta)",
                 local: "Training 1",
                 descricao: "",
@@ -414,7 +486,7 @@
 
             // === 17/09 (Quinta-feira) ===
             {
-                titulo: "Ultrassom (fígado/tireóide) + Foto 4D Gestantes HME",
+                titulo: "Exames de Ultrassonografia Preventiva e Obstétrica (4D)",
                 dia: "17/09 (Quinta)",
                 local: "Training 1",
                 descricao: "",
@@ -668,6 +740,12 @@
             }
             document.getElementById('grupo-nome').classList.remove('erro');
 
+            if (!setor) {
+                document.getElementById('grupo-area').classList.add('erro');
+                return;
+            }
+            document.getElementById('grupo-area').classList.remove('erro');
+
             if (!supabaseClient) {
                 alert('⚠️ O Supabase não está configurado!');
                 return;
@@ -691,12 +769,32 @@
                     return;
                 }
 
+                // Verificar se o Knox ID já tem reserva nesta atividade
+                const { data: existentes, error: erroBusca } = await supabaseClient
+                    .from('inscricoes')
+                    .select('id, horario')
+                    .ilike('setor', setor)
+                    .ilike('atividade', atividadeSelecionada.titulo);
+
+                if (erroBusca) throw erroBusca;
+
+                if (existentes && existentes.length > 0) {
+                    document.getElementById('modal-conteudo').style.display = 'none';
+                    document.getElementById('erro-texto').textContent =
+                        `Você já possui uma reserva para "${atividadeSelecionada.titulo}". ` +
+                        `Cancele a reserva existente antes de agendar outro horário na mesma atividade.`;
+                    document.getElementById('erro-global').classList.add('show');
+                    btn.disabled = false;
+                    btn.textContent = 'Confirmar';
+                    return;
+                }
+
                 const { data, error } = await supabaseClient
                     .from('inscricoes')
                     .insert([
                         {
                             nome: nome,
-                            setor: setor || null,
+                            setor: setor,
                             atividade: atividadeSelecionada.titulo,
                             dia: atividadeSelecionada.dia,
                             horario: horarioSelecionado,
@@ -733,6 +831,125 @@
         document.getElementById('input-nome').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') document.getElementById('input-area').focus();
         });
+
+        /* ================================================================
+           🗑️  FUNÇÕES DE CANCELAMENTO DE RESERVA  🗑️
+         ================================================================ */
+
+        function abrirModalCancelamento() {
+            document.getElementById('input-cancel-nome').value = '';
+            document.getElementById('grupo-cancel-nome').classList.remove('erro');
+            document.getElementById('lista-reservas').innerHTML = '';
+            document.getElementById('modal-cancel-conteudo').style.display = 'block';
+            document.getElementById('cancel-sucesso-msg').classList.remove('show');
+            document.getElementById('cancel-erro-global').classList.remove('show');
+            document.getElementById('btn-buscar-reservas').disabled = false;
+            document.getElementById('btn-buscar-reservas').textContent = 'Buscar reservas';
+            document.getElementById('modal-cancel-overlay').classList.add('ativo');
+            setTimeout(() => document.getElementById('input-cancel-nome').focus(), 100);
+        }
+
+        function fecharModalCancelamento() {
+            document.getElementById('modal-cancel-overlay').classList.remove('ativo');
+        }
+
+        document.getElementById('modal-cancel-overlay').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalCancelamento();
+        });
+
+        document.getElementById('input-cancel-nome').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') buscarReservas();
+        });
+
+        async function buscarReservas() {
+            const knoxId = document.getElementById('input-cancel-nome').value.trim();
+            if (!knoxId) {
+                document.getElementById('grupo-cancel-nome').classList.add('erro');
+                return;
+            }
+            document.getElementById('grupo-cancel-nome').classList.remove('erro');
+
+            if (!supabaseClient) {
+                alert('⚠️ O Supabase não está configurado!');
+                return;
+            }
+
+            const btn = document.getElementById('btn-buscar-reservas');
+            btn.disabled = true;
+            btn.textContent = 'Buscando...';
+            const lista = document.getElementById('lista-reservas');
+            lista.innerHTML = '<div class="sem-reservas">Buscando...</div>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('inscricoes')
+                    .select('*')
+                    .ilike('setor', knoxId);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    lista.innerHTML = '<div class="sem-reservas">Nenhuma reserva encontrada com este Knox ID.</div>';
+                    btn.disabled = false;
+                    btn.textContent = 'Buscar reservas';
+                    return;
+                }
+
+                lista.innerHTML = data.map(reserva => `
+                    <div class="item-reserva">
+                        <div class="item-reserva-info">
+                            <strong>${reserva.atividade}</strong>
+                            <div>📅 ${reserva.dia} • ⏰ ${reserva.horario}</div>
+                            <div>📍 ${reserva.local || '—'}</div>
+                        </div>
+                        <button class="btn-remover" onclick="cancelarReserva(${reserva.id}, '${reserva.atividade}', '${reserva.dia}', '${reserva.horario}')">
+                            Cancelar
+                        </button>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                console.error('Erro ao buscar reservas:', e);
+                lista.innerHTML = '';
+                document.getElementById('cancel-erro-texto').textContent = 'Erro ao buscar reservas: ' + e.message;
+                document.getElementById('cancel-erro-global').classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Buscar reservas';
+            }
+        }
+
+        async function cancelarReserva(id, atividade, dia, horario) {
+            if (!confirm('Tem certeza que deseja cancelar esta reserva?\n\n' + atividade + '\n' + dia + ' às ' + horario)) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('inscricoes')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                const chave = `${atividade}|${dia}|${horario}`;
+                if (inscricoesCache[chave] > 0) {
+                    inscricoesCache[chave]--;
+                }
+
+                document.getElementById('modal-cancel-conteudo').style.display = 'none';
+                document.getElementById('cancel-sucesso-texto').textContent =
+                    `Sua reserva para "${atividade}" (${dia} às ${horario}) foi cancelada com sucesso!`;
+                document.getElementById('cancel-sucesso-msg').classList.add('show');
+
+                renderizarAtividades();
+
+            } catch (e) {
+                console.error('Erro ao cancelar reserva:', e);
+                document.getElementById('cancel-erro-texto').textContent = 'Não foi possível cancelar. Tente novamente. Erro: ' + e.message;
+                document.getElementById('cancel-erro-global').classList.add('show');
+            }
+        }
     </script>
 </body>
 </html>
