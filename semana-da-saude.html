@@ -263,7 +263,7 @@
             <strong>📋 Como se inscrever:</strong>
             Escolha a atividade, selecione o horário desejado, preencha seu nome e Knox ID, e confirme.
             As vagas são controladas automaticamente em tempo real!
-            <br><strong>⚠️ Atenção:</strong> As vagas são limitadas. Garanta sua participação o quanto antes!
+            <br><strong>⚠️ Atenção:</strong> Algumas atividades possuem vagas limitadas. Garanta sua participação o quanto antes!
         </div>
 
         <div class="filtro-dias" id="filtro-dias"></div>
@@ -280,7 +280,7 @@
         </div>
 
         <button class="btn-cancelar-reserva" onclick="abrirModalCancelamento()">
-            🗑️ Cancelar minha reserva
+            📋 Minhas Reservas
         </button>
     </div>
 
@@ -381,6 +381,9 @@
         // 📅 Data do evento:
         const DATA_EVENTO = "14 a 17 de Setembro de 2026";
 
+        // 🔗 URL do GitHub Pages (para link de cancelamento no .ics):
+        const URL_SITE = "https://seu-usuario.github.io/semana-da-saude";
+
         // 📋 Lista de atividades — Semana da Saúde Be Well (14 a 18/09/2026)
         //    14/09 = Segunda-feira | 15/09 = Terça-feira | 16/09 = Quarta-feira | 17/09 = Quinta-feira
         const ATIVIDADES = [
@@ -390,29 +393,28 @@
                 dia: "14/09 (Segunda)",
                 local: "Training 4",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
-                    { horario: "09:00", vagas: 1 },
-                    { horario: "09:20", vagas: 1 },
-                    { horario: "09:40", vagas: 1 },
-                    { horario: "10:00", vagas: 1 },
-                    { horario: "10:20", vagas: 1 },
-                    { horario: "10:40", vagas: 1 },
-                    { horario: "11:00", vagas: 1 },
-                    { horario: "11:20", vagas: 1 },
-                    { horario: "11:40", vagas: 1 },
-                    { horario: "12:00", vagas: 1 },
-                    { horario: "13:00", vagas: 1 },
-                    { horario: "13:20", vagas: 1 },
-                    { horario: "13:40", vagas: 1 },
-                    { horario: "14:00", vagas: 1 },
-                    { horario: "14:20", vagas: 1 },
-                    { horario: "14:40", vagas: 1 },
-                    { horario: "15:00", vagas: 1 },
-                    { horario: "15:20", vagas: 1 },
-                    { horario: "15:40", vagas: 1 },
-                    { horario: "16:00", vagas: 1 },
-                    { horario: "16:20", vagas: 1 },
-                    { horario: "16:40", vagas: 1 },
+                    { horario: "09:45", vagas: 1 },
+                    { horario: "10:05", vagas: 1 },
+                    { horario: "10:25", vagas: 1 },
+                    { horario: "10:45", vagas: 1 },
+                    { horario: "11:05", vagas: 1 },
+                    { horario: "11:25", vagas: 1 },
+                    { horario: "11:45", vagas: 1 },
+                    { horario: "12:05", vagas: 1 },
+                    { horario: "13:05", vagas: 1 },
+                    { horario: "13:25", vagas: 1 },
+                    { horario: "13:45", vagas: 1 },
+                    { horario: "14:05", vagas: 1 },
+                    { horario: "14:25", vagas: 1 },
+                    { horario: "14:45", vagas: 1 },
+                    { horario: "15:05", vagas: 1 },
+                    { horario: "15:25", vagas: 1 },
+                    { horario: "15:45", vagas: 1 },
+                    { horario: "16:05", vagas: 1 },
+                    { horario: "16:25", vagas: 1 },
+                    { horario: "16:45", vagas: 1 },
                 ]
             },
             {
@@ -420,6 +422,7 @@
                 dia: "14/09 (Segunda)",
                 local: "Training 3",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
                     { horario: "10:30", vagas: 30 },
                     { horario: "11:30", vagas: 30 },
@@ -432,8 +435,9 @@
             {
                 titulo: "Sessão de Mindfulness",
                 dia: "15/09 (Terça)",
-                local: "Training 4",
+                local: "BES (Showroom B2B)",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
                     { horario: "15:00", vagas: 999 },
                     { horario: "15:40", vagas: 999 },
@@ -445,6 +449,7 @@
                 dia: "15/09 (Terça)",
                 local: "Training 1",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
                     { horario: "10:00 às 18:00 (livre)", vagas: 999 },
                 ]
@@ -456,6 +461,7 @@
                 dia: "16/09 (Quarta)",
                 local: "Training 1",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
                     { horario: "10:00", vagas: 1 },
                     { horario: "10:30", vagas: 1 },
@@ -482,6 +488,7 @@
                 dia: "17/09 (Quinta)",
                 local: "Espaço Café",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
                     { horario: "10:00", vagas: 50 },
                 ]
@@ -489,8 +496,9 @@
             {
                 titulo: "Exames de Ultrassonografia Preventiva e Obstétrica (4D)",
                 dia: "17/09 (Quinta)",
-                local: "Training 1",
+                local: "Training 4",
                 descricao: "",
+                linkTeams: "",
                 horarios: [
                     { horario: "10:00", vagas: 1 },
                     { horario: "10:30", vagas: 1 },
@@ -892,6 +900,13 @@
             const titulo = atividadeSelecionada.titulo;
             const local = atividadeSelecionada.local || '';
             const nome = document.getElementById('input-nome').value.trim();
+            const linkTeams = atividadeSelecionada.linkTeams || '';
+
+            // Montar descrição com link do Teams (se houver)
+            let descricao = 'Semana da Saude - Be Well\\nInscrito: ' + nome;
+            if (linkTeams) {
+                descricao += '\\n\\n🔗 Link do Teams: ' + linkTeams;
+            }
 
             // Gerar conteúdo ICS
             const ics = [
@@ -906,7 +921,7 @@
                 'DTSTART:' + dtStart,
                 'DTEND:' + dtEnd,
                 'SUMMARY:' + titulo,
-                'DESCRIPTION:Semana da Saude - Be Well\\nInscrito: ' + nome,
+                'DESCRIPTION:' + descricao,
                 'LOCATION:' + local,
                 'BEGIN:VALARM',
                 'TRIGGER:-PT15M',
